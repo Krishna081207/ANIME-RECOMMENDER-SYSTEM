@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Cpu, Database, Network, BarChart3, Layers, BookOpen, CheckCircle2 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 export default function MLStatsDashboard() {
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ export default function MLStatsDashboard() {
 
   const fetchMlInfo = async () => {
     try {
-      const res = await fetch('/api/ml-info');
+      const res = await fetch(`${API_BASE_URL}/api/ml-info`);
       const data = await res.json();
       setInfo(data);
     } catch (e) {

@@ -9,6 +9,8 @@ import MLStatsDashboard from './components/MLStatsDashboard';
 import HistoryDrawer from './components/HistoryDrawer';
 import { Sparkles, Flame, AlertCircle } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 export default function App({ activeTabProp = 'discover' }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,7 +67,7 @@ export default function App({ activeTabProp = 'discover' }) {
 
   const fetchAnimeById = async (id) => {
     try {
-      const res = await fetch(`/api/anime/${id}`);
+      const res = await fetch(`${API_BASE_URL}/api/anime/${id}`);
       if (res.ok) {
         const data = await res.json();
         setSelectedAnime(data);
@@ -79,8 +81,8 @@ export default function App({ activeTabProp = 'discover' }) {
     setLoading(true);
     try {
       const [animeRes, genreRes] = await Promise.all([
-        fetch('/api/anime'),
-        fetch('/api/genres')
+        fetch(`${API_BASE_URL}/api/anime`),
+        fetch(`${API_BASE_URL}/api/genres`)
       ]);
       const animeData = await animeRes.json();
       const genreData = await genreRes.json();
@@ -100,7 +102,7 @@ export default function App({ activeTabProp = 'discover' }) {
   const fetchRecommendations = async (favIds = [], favGenres = [], score = 0.0) => {
     setLoadingRecs(true);
     try {
-      const res = await fetch('/api/recommend/personalized', {
+      const res = await fetch(`${API_BASE_URL}/api/recommend/personalized`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

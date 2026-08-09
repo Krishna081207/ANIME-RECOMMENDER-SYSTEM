@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { X, ExternalLink, Star, Play, Sparkles, Building2, Calendar, Film, BookmarkPlus, Check } from 'lucide-react';
 import AnimeCard from './AnimeCard';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorite, onSelectAnime }) {
   const [similarAnime, setSimilarAnime] = useState([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
@@ -14,7 +16,7 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
   const fetchSimilar = async (id) => {
     setLoadingSimilar(true);
     try {
-      const res = await fetch('/api/recommend/similar', {
+      const res = await fetch(`${API_BASE_URL}/api/recommend/similar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ anime_id: id, top_n: 4 })
