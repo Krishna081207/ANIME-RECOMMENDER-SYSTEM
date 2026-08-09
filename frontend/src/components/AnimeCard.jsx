@@ -20,12 +20,13 @@ export default function AnimeCard({ anime, onSelect, onToggleFavorite, isFavorit
         overflow: 'hidden',
         cursor: 'pointer',
         transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--glass-border)'
+        borderRadius: '18px',
+        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(32, 31, 31, 0.8)'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-6px)';
-        e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.7), 0 0 20px var(--primary-red-glow)';
+        e.currentTarget.style.boxShadow = '0 16px 36px rgba(0, 0, 0, 0.72), 0 0 20px var(--primary-red-glow)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
@@ -61,7 +62,7 @@ export default function AnimeCard({ anime, onSelect, onToggleFavorite, isFavorit
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to top, rgba(19, 19, 19, 0.95) 0%, transparent 60%)'
+          background: 'linear-gradient(to top, rgba(19, 19, 19, 0.95) 0%, transparent 58%)'
         }} />
 
         {/* ML Match Badge if present */}
@@ -81,7 +82,7 @@ export default function AnimeCard({ anime, onSelect, onToggleFavorite, isFavorit
             gap: '4px',
             boxShadow: '0 4px 12px rgba(0, 242, 254, 0.4)'
           }}>
-            <Sparkles size={13} fill="#0e0e0e" /> {anime.match_percentage}% MATCH
+            <Sparkles size={13} fill="#0e0e0e" /> {anime.match_percentage}% fit
           </div>
         )}
 

@@ -36,6 +36,7 @@ export default function App({ activeTabProp = 'discover' }) {
   };
 
   const activeTab = getActiveTab();
+  const hasSearchQuery = searchQuery.trim().length > 0;
 
   // Favorites state persisted in localStorage
   const [favorites, setFavorites] = useState(() => {
@@ -177,6 +178,9 @@ export default function App({ activeTabProp = 'discover' }) {
   });
 
   const heroAnime = animeList.length > 0 ? animeList[0] : null;
+  const shelfAnime = activeTab === 'personalized'
+    ? recommendations.slice(0, 8)
+    : animeList.slice(0, 8);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -203,13 +207,72 @@ export default function App({ activeTabProp = 'discover' }) {
         {activeTab !== 'dashboard' && (
           <>
             {/* Featured Hero Banner */}
-            {heroAnime && activeTab === 'discover' && !searchQuery && (
+            {heroAnime && activeTab === 'discover' && !hasSearchQuery && (
               <HeroBanner
                 anime={heroAnime}
                 onSelect={(a) => handleSelectAnime(a)}
                 onToggleFavorite={handleToggleFavorite}
                 isFavorite={isFavorite(heroAnime.anime_id)}
               />
+            )}
+
+            {!hasSearchQuery && shelfAnime.length > 0 && (
+              <section style={{ marginBottom: '36px' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'end',
+                  justifyContent: 'space-between',
+                  gap: '16px',
+                  marginBottom: '18px',
+                  flexWrap: 'wrap'
+                }}>
+                  <div>
+                    <div style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.16em',
+                      textTransform: 'uppercase',
+                      color: 'var(--secondary-gold)',
+                      marginBottom: '6px'
+                    }}>
+                      Featured Shelf
+                    </div>
+                    <h2 style={{
+                      fontFamily: 'var(--font-headline)',
+                      fontSize: '2rem',
+                      fontWeight: 800,
+                      color: '#ffffff',
+                      marginBottom: '6px'
+                    }}>
+                      {activeTab === 'personalized' ? 'Because You Liked This' : 'Recommended for You'}
+                    </h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+                      {activeTab === 'personalized'
+                        ? 'A cinematic shelf tuned to your saved favorites and genre preferences.'
+                        : 'A curated horizontal row of the strongest picks from the catalog.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  gap: '18px',
+                  overflowX: 'auto',
+                  paddingBottom: '16px',
+                  scrollSnapType: 'x mandatory'
+                }}>
+                  {shelfAnime.map((anime) => (
+                    <div key={`shelf-${anime.anime_id}`} style={{ flex: '0 0 240px', scrollSnapAlign: 'start' }}>
+                      <AnimeCard
+                        anime={anime}
+                        onSelect={(a) => handleSelectAnime(a)}
+                        onToggleFavorite={handleToggleFavorite}
+                        isFavorite={isFavorite(anime.anime_id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
             )}
 
             {/* Interactive Preferences & Filter Bar */}
@@ -230,7 +293,9 @@ export default function App({ activeTabProp = 'discover' }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: '20px'
+              marginBottom: '20px',
+              flexWrap: 'wrap',
+              gap: '16px'
             }}>
               <h2 style={{
                 fontFamily: 'var(--font-headline)',
@@ -241,23 +306,53 @@ export default function App({ activeTabProp = 'discover' }) {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                {activeTab === 'personalized' ? (
+                {hasSearchQuery ? (
+                  <>
+                    <AlertCircle size={24} color="var(--secondary-gold)" /> Search Results
+                  </>
+                ) : activeTab === 'personalized' ? (
                   <>
                     <Sparkles size={24} color="var(--secondary-gold)" /> Your Live ML Recommendation Feed
                   </>
                 ) : (
                   <>
-                    <Flame size={24} color="var(--primary-red)" /> Top Anime Library ({filteredAnime.length})
+                    <Flame size={24} color="var(--primary-red)" /> Top Anime Library
                   </>
                 )}
               </h2>
 
-              {activeTab === 'personalized' && (
+              {activeTab === 'personalized' && !hasSearchQuery && (
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   Seeded by {favorites.length} saved favorites & {selectedGenres.length} genre preferences
                 </span>
               )}
+
+              {hasSearchQuery && (
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Showing {filteredAnime.length} matches
+                </span>
+              )}
             </div>
+
+            {hasSearchQuery && genres.length > 0 && (
+              <div style={{
+                marginBottom: '18px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px'
+              }}>
+                {genres.slice(0, 6).map((genre) => (
+                  <button
+                    key={genre}
+                    onClick={() => setSearchQuery(genre)}
+                    className="glass-pill"
+                    style={{ cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)' }}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Grid Content */}
             {loading || (activeTab === 'personalized' && loadingRecs) ? (

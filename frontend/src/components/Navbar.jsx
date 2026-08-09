@@ -24,10 +24,10 @@ export default function Navbar({
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      background: 'rgba(19, 19, 19, 0.88)',
-      backdropFilter: 'blur(20px)',
+      background: 'rgba(19, 19, 19, 0.72)',
+      backdropFilter: 'blur(24px)',
       borderBottom: '1px solid rgba(229, 226, 225, 0.1)',
-      padding: '14px 28px'
+      padding: '14px 24px'
     }}>
       <div style={{
         maxWidth: '1400px',
@@ -36,7 +36,7 @@ export default function Navbar({
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '16px'
+        gap: '18px'
       }}>
         {/* Brand Logo */}
         <div 
@@ -49,29 +49,29 @@ export default function Navbar({
           }}
         >
           <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #e50914, #7c3aed)',
+            width: '44px',
+            height: '44px',
+            borderRadius: '14px',
+            background: 'linear-gradient(135deg, #e50914, #ffb4aa)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 15px rgba(229, 9, 20, 0.5)'
+            boxShadow: '0 0 18px rgba(229, 9, 20, 0.45)'
           }}>
             <Film size={24} color="#ffffff" />
           </div>
           <div>
             <h1 style={{
               fontFamily: 'var(--font-headline)',
-              fontSize: '1.4rem',
+              fontSize: '1.35rem',
               fontWeight: 800,
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
               color: '#ffffff'
             }}>
-              CINEMATCH <span style={{ color: '#e50914', fontFamily: 'var(--font-body)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>ANIME</span>
+              CINEMATCH <span style={{ color: '#e50914', fontFamily: 'var(--font-body)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em' }}>ANIME</span>
             </h1>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>AI ML Recommendation Engine</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Personalized anime discovery</p>
           </div>
         </div>
 
@@ -80,7 +80,7 @@ export default function Navbar({
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          background: 'rgba(32, 31, 31, 0.6)',
+          background: 'rgba(32, 31, 31, 0.62)',
           padding: '4px',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--glass-border)'
@@ -122,27 +122,7 @@ export default function Navbar({
               transition: 'all 0.2s'
             }}
           >
-            <Sparkles size={16} /> My ML Feed
-          </button>
-
-          <button
-            onClick={() => navigate('/dashboard')}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '0.9rem',
-              fontWeight: activeTab === 'dashboard' ? 600 : 400,
-              color: activeTab === 'dashboard' ? '#ffffff' : 'var(--text-muted)',
-              background: activeTab === 'dashboard' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.2s'
-            }}
-          >
-            <Cpu size={16} /> ML Insights
+            <Sparkles size={16} /> My Picks
           </button>
         </nav>
 
@@ -167,7 +147,7 @@ export default function Navbar({
                 color: '#ffffff',
                 fontSize: '0.88rem',
                 outline: 'none',
-                width: '200px',
+                width: '220px',
                 transition: 'all 0.2s'
               }}
             />

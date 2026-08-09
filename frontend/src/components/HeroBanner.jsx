@@ -8,14 +8,14 @@ export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavori
     <div style={{
       position: 'relative',
       width: '100%',
-      minHeight: '480px',
-      borderRadius: 'var(--radius-lg)',
+      minHeight: '620px',
+      borderRadius: '24px',
       overflow: 'hidden',
-      marginBottom: '36px',
+      marginBottom: '40px',
       display: 'flex',
       alignItems: 'flex-end',
       boxShadow: 'var(--shadow-lg)',
-      border: '1px solid var(--glass-border)'
+      border: '1px solid rgba(255,255,255,0.08)'
     }}>
       {/* Background Image Overlay */}
       <div style={{
@@ -44,11 +44,11 @@ export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavori
       <div style={{
         position: 'relative',
         zIndex: 10,
-        padding: '40px 48px',
-        maxWidth: '800px'
+        padding: '48px 52px',
+        maxWidth: '860px'
       }}>
         {/* Badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
           <span style={{
             background: 'var(--primary-red)',
             color: '#ffffff',
@@ -84,7 +84,7 @@ export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavori
         {/* Title */}
         <h2 style={{
           fontFamily: 'var(--font-headline)',
-          fontSize: '3.2rem',
+          fontSize: 'clamp(2.8rem, 5vw, 4.8rem)',
           fontWeight: 900,
           lineHeight: 1.1,
           marginBottom: '12px',
@@ -116,7 +116,7 @@ export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavori
             className="btn-primary" 
             style={{ padding: '12px 28px', fontSize: '1rem' }}
           >
-            <Play size={18} fill="currentColor" /> Watch Sources & Details
+            <Play size={18} fill="currentColor" /> Open Details
           </button>
 
           <button
@@ -140,7 +140,7 @@ export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavori
             className="btn-secondary"
             style={{ padding: '12px 18px' }}
           >
-            <Info size={18} /> ML Rationale
+            <Info size={18} /> Why this fits
           </button>
         </div>
       </div>

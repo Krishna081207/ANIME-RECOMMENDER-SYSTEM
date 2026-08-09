@@ -29,7 +29,7 @@ export default function PreferencesBar({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <SlidersHorizontal size={20} color="var(--secondary-gold)" />
           <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff' }}>
-            ML Preference Tuner & Filters
+            Preference Tuner & Filters
           </h3>
         </div>
 
@@ -47,7 +47,7 @@ export default function PreferencesBar({
             className="btn-gold"
             style={{ padding: '8px 18px', fontSize: '0.88rem' }}
           >
-            <Sparkles size={16} /> Recalculate Live ML Feed
+            <Sparkles size={16} /> Refresh Recommendations
           </button>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function PreferencesBar({
       {favoriteAnimeList.length > 0 && (
         <div style={{ marginBottom: '16px' }}>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
-            SEEDED FAVORITE ANIME ({favoriteAnimeList.length} SELECTED):
+            YOUR SAVED TITLES ({favoriteAnimeList.length} SELECTED):
           </span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {favoriteAnimeList.map((a) => (
@@ -133,7 +133,7 @@ export default function PreferencesBar({
       }}>
         <Filter size={16} color="var(--text-muted)" />
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', minWidth: '140px' }}>
-          Min Score Threshold: <strong>{minScore.toFixed(1)}+</strong>
+          Minimum Score: <strong>{minScore.toFixed(1)}+</strong>
         </span>
         <input 
           type="range"

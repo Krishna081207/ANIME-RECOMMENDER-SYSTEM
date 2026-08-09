@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 :root {
   /* StitchMCP Design Tokens - Cinematic Noir Theme */
   --bg-dark: #131313;
@@ -52,6 +53,10 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at top left, rgba(229, 9, 20, 0.12), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(233, 195, 73, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 18%);
 }
 
 /* Custom Scrollbars */

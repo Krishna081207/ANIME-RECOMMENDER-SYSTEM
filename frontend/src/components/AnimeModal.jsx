@@ -55,11 +55,11 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
         className="glass-panel-dense fade-in"
         style={{
           width: '100%',
-          maxWidth: '920px',
-          maxHeight: '90vh',
+          maxWidth: '1180px',
+          maxHeight: '92vh',
           overflowY: 'auto',
           position: 'relative',
-          borderRadius: 'var(--radius-lg)',
+          borderRadius: '24px',
           boxShadow: 'var(--shadow-lg)',
           border: '1px solid var(--glass-border)'
         }}
@@ -88,108 +88,96 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
           <X size={20} />
         </button>
 
-        {/* Modal Backdrop Banner */}
-        <div style={{
-          position: 'relative',
-          width: '100%',
-          height: '280px',
-          overflow: 'hidden'
-        }}>
-          <img 
-            src={anime.backdrop_url || anime.poster_url} 
-            alt={anime.name} 
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              filter: 'brightness(0.55)'
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(to top, #141313 0%, transparent 100%)'
-          }} />
-
-          {/* Title Overlay */}
-          <div style={{
-            position: 'absolute',
-            bottom: '20px',
-            left: '24px',
-            right: '24px',
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap: '20px'
-          }}>
-            <img 
-              src={anime.poster_url} 
-              alt={anime.name}
-              style={{
-                width: '120px',
-                height: '170px',
-                objectFit: 'cover',
-                borderRadius: 'var(--radius-md)',
-                boxShadow: 'var(--shadow-lg)',
-                border: '2px solid rgba(255, 255, 255, 0.15)',
-                display: 'block'
-              }}
-            />
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <span style={{
-                  background: 'var(--primary-red)',
-                  color: '#ffffff',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  padding: '2px 8px',
-                  borderRadius: '4px'
-                }}>
-                  {anime.type} ({anime.episodes} EPS)
-                </span>
-                <span style={{
-                  color: 'var(--secondary-gold)',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                  <Star size={14} fill="currentColor" /> {anime.score} / 10 MAL
-                </span>
-              </div>
-
-              <h2 style={{
-                fontFamily: 'var(--font-headline)',
-                fontSize: '2rem',
-                fontWeight: 800,
-                color: '#ffffff',
-                lineHeight: 1.15
-              }}>
-                {anime.english_name || anime.name}
-              </h2>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{anime.name}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Modal Main Body */}
         <div style={{ padding: '28px' }}>
-          {/* Action Row & Streaming Links */}
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '16px',
-            paddingBottom: '20px',
-            marginBottom: '20px',
-            borderBottom: '1px solid var(--glass-border)'
+            display: 'grid',
+            gridTemplateColumns: 'minmax(280px, 360px) minmax(0, 1fr)',
+            gap: '28px',
+            alignItems: 'start'
           }}>
-            {/* Watch Sources */}
-            <div>
-              <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px' }}>
-                OFFICIAL STREAMING SOURCES
-              </p>
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                position: 'sticky',
+                top: '20px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '20px',
+                padding: '16px'
+              }}>
+                <div style={{ position: 'relative', borderRadius: '18px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
+                  <img
+                    src={anime.poster_url}
+                    alt={anime.name}
+                    style={{ width: '100%', display: 'block', aspectRatio: '2 / 3', objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(19,19,19,0.88), transparent 45%)'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    left: '14px',
+                    right: '14px',
+                    bottom: '14px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: '10px',
+                    alignItems: 'end'
+                  }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ background: 'var(--primary-red)', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>
+                          {anime.type} · {anime.episodes} EPS
+                        </span>
+                        <span style={{ color: 'var(--secondary-gold)', fontWeight: 700, fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Star size={14} fill="currentColor" /> {anime.score} / 10
+                        </span>
+                      </div>
+                      <h2 style={{ fontFamily: 'var(--font-headline)', fontSize: '1.9rem', lineHeight: 1.1, color: '#fff', marginBottom: '4px' }}>
+                        {anime.english_name || anime.name}
+                      </h2>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{anime.name}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '16px', display: 'grid', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => onToggleFavorite(anime)}
+                      className={isFavorite ? 'btn-gold' : 'btn-secondary'}
+                      style={{ flex: '1 1 220px', justifyContent: 'center', padding: '12px 16px' }}
+                    >
+                      {isFavorite ? <Check size={18} /> : <BookmarkPlus size={18} />}
+                      {isFavorite ? 'Saved' : 'Save to My List'}
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '12px', padding: '10px 12px', border: '1px solid var(--glass-border)' }}>
+                      <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Studio</span>
+                      <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{anime.studio}</span>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '12px', padding: '10px 12px', border: '1px solid var(--glass-border)' }}>
+                      <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Year</span>
+                      <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{anime.premiered_year}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '12px', padding: '12px', border: '1px solid var(--glass-border)' }}>
+                    <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Genres</span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {genres.map((g, i) => (
+                        <span key={i} className="glass-pill" style={{ fontSize: '0.72rem', padding: '2px 8px' }}>{g}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {streamingSources.length > 0 ? (
                   streamingSources.map((src, i) => (
@@ -199,127 +187,70 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn-primary"
-                      style={{ padding: '6px 14px', fontSize: '0.85rem' }}
+                      style={{ padding: '8px 14px', fontSize: '0.85rem' }}
                     >
                       <Play size={14} fill="currentColor" /> {src.name} <ExternalLink size={12} />
                     </a>
                   ))
                 ) : (
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Available on Crunchyroll & Netflix</span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Official sources will appear here when available</span>
+                )}
+              </div>
+
+              {anime.explanation && (
+                <div style={{
+                  background: 'rgba(0, 242, 254, 0.08)',
+                  border: '1px solid rgba(0, 242, 254, 0.25)',
+                  borderRadius: '16px',
+                  padding: '16px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px'
+                }}>
+                  <Sparkles size={20} color="#00f2fe" style={{ marginTop: '2px', flexShrink: 0 }} />
+                  <div>
+                    <h4 style={{ color: '#00f2fe', fontSize: '0.9rem', fontWeight: 700, marginBottom: '4px' }}>
+                      Why this fits you ({anime.match_percentage || '95'}% fit)
+                    </h4>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: 1.55 }}>
+                      {anime.explanation}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '18px', border: '1px solid var(--glass-border)' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '10px' }}>Synopsis</h3>
+                <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  {anime.synopsis}
+                </p>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '18px', border: '1px solid var(--glass-border)' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '14px' }}>More from this vibe</h3>
+
+                {loadingSimilar ? (
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Finding similar titles...</p>
+                ) : (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                    gap: '16px'
+                  }}>
+                    {similarAnime.map((rec) => (
+                      <AnimeCard
+                        key={rec.anime_id}
+                        anime={rec}
+                        onSelect={(a) => onSelectAnime(a)}
+                        onToggleFavorite={onToggleFavorite}
+                        isFavorite={isFavorite(rec.anime_id)}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
-
-            {/* Favorite Action */}
-            <button
-              onClick={() => onToggleFavorite(anime)}
-              className={isFavorite ? "btn-gold" : "btn-secondary"}
-              style={{ padding: '10px 20px' }}
-            >
-              {isFavorite ? <Check size={18} /> : <BookmarkPlus size={18} />}
-              {isFavorite ? 'Saved in Favorites' : 'Add to Favorites'}
-            </button>
           </div>
-
-          {/* ML Match Explanation Box if available */}
-          {anime.explanation && (
-            <div style={{
-              background: 'rgba(0, 242, 254, 0.08)',
-              border: '1px solid rgba(0, 242, 254, 0.25)',
-              borderRadius: 'var(--radius-md)',
-              padding: '16px',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '12px'
-            }}>
-              <Sparkles size={20} color="#00f2fe" style={{ marginTop: '2px', flexShrink: 0 }} />
-              <div>
-                <h4 style={{ color: '#00f2fe', fontSize: '0.9rem', fontWeight: 700, marginBottom: '2px' }}>
-                  ML Engine Recommendation Rationale ({anime.match_percentage || '95'}% Match)
-                </h4>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1.4 }}>
-                  {anime.explanation}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Synopsis */}
-          <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '8px' }}>
-              Synopsis
-            </h3>
-            <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              {anime.synopsis}
-            </p>
-          </div>
-
-          {/* Specs Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '12px',
-            marginBottom: '32px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            padding: '16px',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--glass-border)'
-          }}>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>STUDIO</span>
-              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff' }}>{anime.studio}</p>
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>RELEASE YEAR</span>
-              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff' }}>{anime.premiered_year}</p>
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>RATING</span>
-              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff' }}>{anime.rating_age || 'R - 17+'}</p>
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GENRES</span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
-                {genres.map((g, i) => (
-                  <span key={i} className="glass-pill" style={{ fontSize: '0.72rem', padding: '2px 8px' }}>
-                    {g}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Similar ML Recommendations Section */}
-          <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={18} color="var(--primary-red)" /> Similar ML Match Recommendations
-            </h3>
-
-            {loadingSimilar ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Calculating TF-IDF similarity matrix vectors...</p>
-            ) : (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                gap: '16px'
-              }}>
-                {similarAnime.map((rec) => (
-                  <AnimeCard
-                    key={rec.anime_id}
-                    anime={rec}
-                    onSelect={(a) => {
-                      onSelectAnime(a);
-                    }}
-                    onToggleFavorite={onToggleFavorite}
-                    isFavorite={isFavorite(rec.anime_id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
