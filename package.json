@@ -1,0 +1,11 @@
+{
+  "name": "anime-recommender-system-root",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Full-Stack Anime Recommender System (React + FastAPI)",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview"
+  }
+}
