@@ -9,7 +9,9 @@ import MLStatsDashboard from './components/MLStatsDashboard';
 import HistoryDrawer from './components/HistoryDrawer';
 import { Sparkles, Flame, AlertCircle } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+// instead of: fetch("http://127.0.0.1:8000/api/anime")
+const API_URL = import.meta.env.VITE_API_URL;
+fetch(`${API_URL}/api/anime`)
 
 export default function App({ activeTabProp = 'discover' }) {
   const navigate = useNavigate();
