@@ -4,9 +4,28 @@ import AnimeCard from './AnimeCard';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
-export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorite, onSelectAnime }) {
+export default function AnimeModal({
+  anime,
+  onClose,
+  onToggleFavorite,
+  isFavorite,
+  onSelectAnime,
+  favorites = []
+}) {
   const [similarAnime, setSimilarAnime] = useState([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
+
+  const checkIsFavorite = (targetId) => {
+    if (typeof isFavorite === 'function') {
+      return isFavorite(targetId);
+    }
+    if (Array.isArray(favorites) && favorites.length > 0) {
+      return favorites.some((f) => f.anime_id === targetId);
+    }
+    return anime && targetId === anime.anime_id ? Boolean(isFavorite) : false;
+  };
+
+  const isCurrentFavorite = anime ? checkIsFavorite(anime.anime_id) : false;
 
   useEffect(() => {
     if (!anime) return;
@@ -146,11 +165,11 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => onToggleFavorite(anime)}
-                      className={isFavorite ? 'btn-gold' : 'btn-secondary'}
+                      className={isCurrentFavorite ? 'btn-gold' : 'btn-secondary'}
                       style={{ flex: '1 1 220px', justifyContent: 'center', padding: '12px 16px' }}
                     >
-                      {isFavorite ? <Check size={18} /> : <BookmarkPlus size={18} />}
-                      {isFavorite ? 'Saved' : 'Save to My List'}
+                      {isCurrentFavorite ? <Check size={18} /> : <BookmarkPlus size={18} />}
+                      {isCurrentFavorite ? 'Saved' : 'Save to My List'}
                     </button>
                   </div>
 
@@ -243,7 +262,7 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
                         anime={rec}
                         onSelect={(a) => onSelectAnime(a)}
                         onToggleFavorite={onToggleFavorite}
-                        isFavorite={isFavorite(rec.anime_id)}
+                        isFavorite={checkIsFavorite(rec.anime_id)}
                       />
                     ))}
                   </div>
@@ -251,6 +270,15 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, isFavorit
               </div>
             </div>
           </div>
+        </div>
+      </div>
     </div>
   );
 }
+
+
+
+
+
+
+

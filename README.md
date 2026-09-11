@@ -31,9 +31,9 @@ A full-stack, production-ready **Anime Recommender System** built with a **React
 ANIME-RECOMMENDER SYSTEM/
 ├── backend/                        # Python Machine Learning Backend
 │   ├── data/
-│   │   └── anime_dataset.csv       # Kaggle-compliant Anime Dataset (30 titles)
+│   │   └── anime_dataset.csv       # 17,562+ Kaggle Anime Dataset
 │   ├── models/
-│   │   └── recommender_model.pkl   # Pre-computed TF-IDF & Cosine Matrix Artifacts
+│   │   └── recommender_model.pkl   # Serialized TF-IDF Vectorizer & Cosine Matrix
 │   ├── recommender.py              # ML Engine (TF-IDF, Cosine Similarity, Explanations)
 │   ├── main.py                     # FastAPI Web Server & REST API
 │   ├── train_model.py              # Model training & pipeline script
@@ -43,15 +43,16 @@ ANIME-RECOMMENDER SYSTEM/
     ├── public/
     ├── src/
     │   ├── components/
-    │   │   ├── Navbar.jsx          # Header, live search, view tabs, saved drawer
-    │   │   ├── HeroBanner.jsx      # Spotlight hero slider with watch links & trailer
+    │   │   ├── Navbar.jsx          # Header, live search, 4 view tabs, saved drawer
+    │   │   ├── HeroBanner.jsx      # Spotlight hero slider with watch links & details
     │   │   ├── AnimeCard.jsx       # Poster card with score, match %, genre pills
     │   │   ├── AnimeModal.jsx      # Detail modal: Synopsis, Watch Sources, ML reasons
     │   │   ├── PreferencesBar.jsx  # Interactive preference tuner (favorites & genres)
-    │   │   ├── MLStatsDashboard.jsx# Mini-project presentation tab showcasing ML internals
-    │   │   └── HistoryDrawer.jsx   # Saved favorites drawer
+    │   │   ├── MLInsights.jsx      # Mini-project presentation tab showcasing ML internals
+    │   │   ├── HistoryDrawer.jsx   # Saved favorites drawer
+    │   │   └── PersonalizedFeed.jsx# AI/ML Personalized recommendation feed
     │   ├── App.jsx                 # App state & API integration
-    │   ├── index.css               # StitchMCP Cinematic Noir CSS design system
+    │   ├── index.css               # Cinematic Noir CSS design system
     │   └── main.jsx
     ├── package.json
     └── vite.config.js

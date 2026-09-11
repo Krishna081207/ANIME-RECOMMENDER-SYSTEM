@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 :root {
-  /* StitchMCP Design Tokens - Cinematic Noir Theme */
-  --bg-dark: #131313;
-  --bg-darker: #0e0e0e;
-  --surface-card: #1c1b1b;
-  --surface-container: #201f1f;
-  --surface-elevated: #2a2a2a;
-  --surface-bright: #353534;
+  /* StitchMCP Design Tokens - Cinematic Forest Noir Theme */
+  --bg-dark: #050c06;
+  --bg-darker: #020703;
+  --surface-card: #0d150f;
+  --surface-container: #121c15;
+  --surface-elevated: #1a251d;
+  --surface-bright: #26362a;
   
   --primary-red: #e50914;
   --primary-red-hover: #ff1e27;
@@ -15,15 +15,20 @@
   --secondary-gold: #e9c349;
   --secondary-gold-hover: #fcd34d;
   --secondary-gold-glow: rgba(233, 195, 73, 0.35);
+
+  --accent-pill-active: #334a6d;
+  --accent-pill-inactive: #1a221a;
+  --text-pill-active: #a2b9e2;
+  --text-pill-inactive: #dce5d9;
   
   --text-primary: #e5e2e1;
-  --text-secondary: #e9bcb6;
-  --text-muted: #af8782;
+  --text-secondary: #dce5d9;
+  --text-muted: #8e9e8f;
   
-  --glass-bg: rgba(32, 31, 31, 0.75);
-  --glass-bg-dense: rgba(20, 19, 19, 0.92);
-  --glass-border: rgba(229, 226, 225, 0.12);
-  --glass-border-glow: rgba(229, 9, 20, 0.3);
+  --glass-bg: rgba(13, 21, 15, 0.82);
+  --glass-bg-dense: rgba(5, 12, 6, 0.94);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-glow: rgba(0, 242, 254, 0.3);
   
   --font-headline: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -34,7 +39,7 @@
   --radius-full: 9999px;
   
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.7);
   --shadow-glow: 0 0 25px var(--primary-red-glow);
   --shadow-gold-glow: 0 0 20px var(--secondary-gold-glow);
 }
@@ -54,9 +59,9 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   background-image:
-    radial-gradient(circle at top left, rgba(229, 9, 20, 0.12), transparent 28%),
-    radial-gradient(circle at 85% 10%, rgba(233, 195, 73, 0.08), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 18%);
+    radial-gradient(circle at top left, rgba(0, 242, 254, 0.08), transparent 32%),
+    radial-gradient(circle at 85% 10%, rgba(233, 195, 73, 0.06), transparent 25%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 20%);
 }
 
 /* Custom Scrollbars */
@@ -73,6 +78,52 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-red);
+}
+
+/* Figma Interactive Design Elements */
+[data-name="Background+Shadow"] {
+  transition: transform 210ms ease-out, box-shadow 210ms ease-out;
+  cursor: pointer;
+}
+[data-name="Background+Shadow"]:hover {
+  transform: scale(1.04);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+}
+[data-name="Background+Shadow"]:active {
+  transform: scale(0.99);
+}
+
+[data-name="Button"] {
+  cursor: pointer;
+  transition: filter 160ms ease-out, transform 100ms ease-out;
+}
+[data-name="Button"]:hover {
+  filter: brightness(1.12);
+}
+[data-name="Button"]:active {
+  filter: brightness(0.88);
+  transform: scale(0.97);
+}
+
+[data-name="Link"] {
+  cursor: pointer;
+  transition: opacity 150ms ease-out;
+}
+[data-name="Link"]:hover {
+  opacity: 0.75;
+}
+[data-name="Link"]:active {
+  opacity: 0.5;
+}
+
+[data-name="Overlay+Border+OverlayBlur"],
+[data-name="Overlay+OverlayBlur"] {
+  transition: filter 160ms ease-out, transform 160ms ease-out;
+  cursor: pointer;
+}
+[data-name="Overlay+Border+OverlayBlur"]:hover,
+[data-name="Overlay+OverlayBlur"]:hover {
+  filter: brightness(1.08);
 }
 
 /* Glassmorphic Utilities */

@@ -72,7 +72,7 @@ export default function HistoryDrawer({
           gap: '12px'
         }}>
           {favorites.length === 0 ? (
-            <div style={{ textCenter: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
               <BookmarkCheck size={40} style={{ opacity: 0.3, marginBottom: '12px' }} />
               <p style={{ fontSize: '0.95rem' }}>No saved anime in your list yet.</p>
               <p style={{ fontSize: '0.8rem', marginTop: '6px' }}>

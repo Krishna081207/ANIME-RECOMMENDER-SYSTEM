@@ -25,7 +25,7 @@ export default function MLStatsDashboard() {
 
   if (loading) {
     return (
-      <div className="glass-panel" style={{ padding: '40px', textCenter: 'center' }}>
+      <div className="glass-panel" style={{ padding: '40px', textAlign: 'center' }}>
         <p style={{ color: 'var(--text-muted)' }}>Loading Machine Learning model architecture and vocabulary metrics...</p>
       </div>
     );
@@ -92,7 +92,7 @@ export default function MLStatsDashboard() {
             <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>MATRIX SHAPE</span>
           </div>
           <p style={{ fontSize: '2.2rem', fontWeight: 800, color: '#ffffff' }}>
-            [{info.matrix_shape[0]}, {info.matrix_shape[1]}]
+            [{info.matrix_shape?.[0] ?? 0}, {info.matrix_shape?.[1] ?? 0}]
           </p>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Sparse Cosine Similarity</span>
         </div>

@@ -100,15 +100,15 @@ export default function PreferencesBar({
                 key={g}
                 onClick={() => onToggleGenre(g)}
                 style={{
-                  background: isSelected ? 'var(--primary-red)' : 'rgba(255, 255, 255, 0.05)',
-                  color: isSelected ? '#ffffff' : 'var(--text-secondary)',
-                  border: isSelected ? '1px solid var(--primary-red)' : '1px solid var(--glass-border)',
-                  borderRadius: 'var(--radius-full)',
-                  padding: '5px 12px',
+                  background: isSelected ? '#334a6d' : '#1a221a',
+                  color: isSelected ? '#a2b9e2' : '#dce5d9',
+                  border: isSelected ? '1px solid #4a6fa5' : '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '9999px',
+                  padding: '5px 14px',
                   fontSize: '0.8rem',
-                  fontWeight: isSelected ? 600 : 400,
+                  fontWeight: isSelected ? 700 : 500,
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'background-color 220ms ease-out, color 220ms ease-out',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px'
