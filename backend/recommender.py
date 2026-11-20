@@ -89,23 +89,33 @@ class AnimeRecommender:
                 print(f"Loaded existing ML model ({len(self.df)} anime) from {self.model_path}")
                 return
             except Exception as e:
+                if not os.path.isfile(self.data_path):
+                    raise RuntimeError(
+                        "Could not load the bundled recommender model. Install backend/requirements.txt "
+                        "or provide backend/data/anime_dataset.csv to retrain it."
+                    ) from e
                 print(f"Failed to load model ({e}). Re-training...")
-        
+
         self.train()
 
     def get_all_anime(self, search="", genre="", min_score=0.0, limit=100, page=1):
         """Returns filtered anime list with clean formatted dictionary output."""
-        filtered = self.df.copy()
+        filtered = self.df
         
-        if search:
-            query = search.lower().strip()
+        query = search.strip()
+        if query:
             filtered = filtered[
-                filtered['name'].str.lower().str.contains(query, na=False) |
-                filtered['english_name'].str.lower().str.contains(query, na=False)
+                filtered['name'].str.contains(query, case=False, regex=False, na=False) |
+                filtered['english_name'].str.contains(query, case=False, regex=False, na=False)
             ]
             
-        if genre:
-            filtered = filtered[filtered['genres'].str.contains(genre, case=False, na=False)]
+        genres = [genre] if isinstance(genre, str) else genre or []
+        requested_genres = {name.strip().casefold() for name in genres if name.strip()}
+        if requested_genres:
+            matches_genre = filtered['genres'].fillna('').str.split(',').map(
+                lambda parts: any(part.strip().casefold() in requested_genres for part in parts)
+            )
+            filtered = filtered.loc[matches_genre]
             
         if min_score > 0:
             filtered = filtered[filtered['score'] >= min_score]
@@ -114,23 +124,29 @@ class AnimeRecommender:
         end_idx = start_idx + limit
         paginated = filtered.iloc[start_idx:end_idx]
         
-        records = paginated.to_dict(orient='records')
-        for r in records:
-            if 'streaming_sources_parsed' in r:
-                r['streaming_sources'] = r['streaming_sources_parsed']
-        return records, len(filtered)
+        return [self._format_record(record) for record in paginated.to_dict('records')], len(filtered)
+
+    @staticmethod
+    def _format_record(record):
+        sources = record.pop('streaming_sources_parsed', [])
+        record['streaming_sources'] = [
+            source for source in (sources if isinstance(sources, list) else [])
+            if isinstance(source, dict) and source.get('name') and
+            isinstance(source.get('url'), str) and source['url'].startswith(('https://', 'http://'))
+        ]
+        for key, value in record.items():
+            if isinstance(value, (float, np.floating)) and not np.isfinite(value):
+                record[key] = None
+        return record
 
     def get_anime_by_id(self, anime_id):
         """Returns single anime details by ID."""
         if anime_id not in self.id_to_index:
             return None
         idx = self.id_to_index[anime_id]
-        record = self.df.iloc[idx].to_dict()
-        if 'streaming_sources_parsed' in record:
-            record['streaming_sources'] = record['streaming_sources_parsed']
-        return record
+        return self._format_record(self.df.iloc[idx].to_dict())
 
-    def recommend_by_anime_id(self, anime_id, top_n=10):
+    def recommend_by_anime_id(self, anime_id, top_n=10, min_score=0.0):
         """Finds top N similar anime given a seed anime ID using on-demand sparse cosine similarity."""
         if anime_id not in self.id_to_index:
             return []
@@ -145,16 +161,15 @@ class AnimeRecommender:
         top_indices = np.argsort(sim_vector)[::-1]
         
         # Exclude self
-        top_indices = [i for i in top_indices if i != idx][:top_n]
+        eligible = (self.df['score'].fillna(0) >= min_score).to_numpy()
+        top_indices = [i for i in top_indices if i != idx and eligible[i]][:top_n]
         
         results = []
         seed_row = self.df.iloc[idx]
         
         for sim_idx in top_indices:
             score = sim_vector[sim_idx]
-            item = self.df.iloc[sim_idx].to_dict()
-            if 'streaming_sources_parsed' in item:
-                item['streaming_sources'] = item['streaming_sources_parsed']
+            item = self._format_record(self.df.iloc[sim_idx].to_dict())
                 
             match_percentage = round(float(score) * 100, 1)
             item['match_percentage'] = match_percentage
@@ -163,65 +178,55 @@ class AnimeRecommender:
             
         return results
 
+    def recommend_by_text(self, query, min_score=0.0, top_n=12):
+        """Matches a user's description against the existing catalog feature vectors."""
+        query_vector = self.vectorizer.transform([query])
+        if not query_vector.nnz:
+            return []
+
+        similarities = cosine_similarity(query_vector, self.tfidf_matrix)[0]
+        eligible = (self.df['score'].fillna(0) >= min_score).to_numpy() & (similarities > 0)
+        candidates = np.flatnonzero(eligible)
+        top_indices = candidates[np.argsort(-similarities[candidates], kind='stable')[:top_n]]
+
+        results = []
+        for idx in top_indices:
+            item = self._format_record(self.df.iloc[idx].to_dict())
+            item['match_percentage'] = round(float(similarities[idx]) * 100, 1)
+            item['explanation'] = 'Shares story themes and keywords with your description.'
+            results.append(item)
+        return results
+
     def recommend_by_user_profile(self, favorite_ids=None, favorite_genres=None, min_score=0.0, top_n=12):
         """Generates hybrid ML recommendations using user favorites and genre preferences."""
-        favorite_ids = favorite_ids or []
-        favorite_genres = favorite_genres or []
-        
-        if not favorite_ids and not favorite_genres:
-            # Fallback to top-rated titles if user has no preferences
-            filtered = self.df[self.df['score'] >= min_score].sort_values(by=['members', 'score'], ascending=False).head(top_n)
-            results = filtered.to_dict(orient='records')
-            for item in results:
-                item['match_percentage'] = round(float(item['score']) / 10.0 * 100, 1) if item['score'] > 0 else 75.0
-                item['explanation'] = "Popular top-rated title based on Kaggle community scores."
-                if 'streaming_sources_parsed' in item:
-                    item['streaming_sources'] = item['streaming_sources_parsed']
-            return results
-
-        # Create user profile vector
+        favorite_ids = set(favorite_ids or [])
+        favorite_genres = [genre.strip() for genre in (favorite_genres or []) if genre.strip()]
         fav_indices = [self.id_to_index[aid] for aid in favorite_ids if aid in self.id_to_index]
-        
+
+        user_vector = np.zeros((1, self.tfidf_matrix.shape[1]))
         if fav_indices:
-            user_vector = np.mean(self.tfidf_matrix[fav_indices].toarray(), axis=0).reshape(1, -1)
-        else:
-            user_vector = np.zeros((1, self.tfidf_matrix.shape[1]))
-            
-        # Add genre query vector boost if specified
+            user_vector = np.asarray(self.tfidf_matrix[fav_indices].mean(axis=0))
         if favorite_genres:
             genre_query = " ".join([f"{g} {g} {g}" for g in favorite_genres])
-            genre_vector = self.vectorizer.transform([genre_query]).toarray()
-            user_vector = user_vector + genre_vector
+            user_vector += self.vectorizer.transform([genre_query]).toarray()
 
-        # Calculate similarity between user vector and all anime
+        eligible = ~self.df['anime_id'].isin(favorite_ids) & (self.df['score'].fillna(0) >= min_score)
+        if not user_vector.any():
+            popular = self.df.loc[eligible].sort_values(['members', 'score'], ascending=False).head(top_n)
+            return [
+                {**self._format_record(record), 'explanation': 'Popular title based on MyAnimeList community data.'}
+                for record in popular.to_dict('records')
+            ]
+
         sim_scores = cosine_similarity(user_vector, self.tfidf_matrix)[0]
-        
-        # Filter candidates
-        fav_set = set(favorite_ids)
-        scored_candidates = []
-        for i in range(len(self.df)):
-            aid = self.df.iloc[i]['anime_id']
-            if aid in fav_set:
-                continue
-            sc = self.df.iloc[i]['score']
-            if min_score > 0 and sc < min_score:
-                continue
-            scored_candidates.append((i, sim_scores[i]))
-            
-        scored_candidates = sorted(scored_candidates, key=lambda x: x[1], reverse=True)[:top_n]
-        
-        fav_rows = self.df[self.df['anime_id'].isin(favorite_ids)] if favorite_ids else pd.DataFrame()
+        candidates = np.flatnonzero(eligible.to_numpy())
+        top_indices = candidates[np.argsort(-sim_scores[candidates], kind='stable')[:top_n]]
+        fav_rows = self.df.iloc[fav_indices]
         
         results = []
-        for idx, score in scored_candidates:
-            item = self.df.iloc[idx].to_dict()
-            if 'streaming_sources_parsed' in item:
-                item['streaming_sources'] = item['streaming_sources_parsed']
-                
-            raw_match = float(score)
-            match_percentage = round(min(99.4, max(65.0, raw_match * 100 + 45.0)), 1) if raw_match > 0.05 else round(raw_match * 100, 1)
-            
-            item['match_percentage'] = match_percentage
+        for idx in top_indices:
+            item = self._format_record(self.df.iloc[idx].to_dict())
+            item['match_percentage'] = round(float(sim_scores[idx]) * 100, 1)
             item['explanation'] = self._generate_user_explanation(item, fav_rows, favorite_genres)
             results.append(item)
             
@@ -243,7 +248,7 @@ class AnimeRecommender:
             
         if reasons:
             return f"{match_pct}% match due to " + " & ".join(reasons) + "."
-        return f"{match_pct}% match based on TF-IDF thematic synopsis & tag similarity."
+        return f"{match_pct}% match based on similar story themes and tags."
 
     def _generate_user_explanation(self, rec_item, fav_df, fav_genres):
         """Generates rationale based on user's aggregated preferences."""
@@ -257,11 +262,11 @@ class AnimeRecommender:
         elif matched_fav_genres:
             return f"Selected for your interest in {', '.join(list(matched_fav_genres)[:3])} anime."
         elif fav_titles:
-            return f"High thematic vector similarity to your saved favorite: {fav_titles[0]}."
-        return f"Top recommended match based on your customized ML profile."
+            return f"Shares story themes with your selected title {fav_titles[0]}."
+        return "Recommended for your selected titles and genres."
 
     def get_model_info(self):
-        """Returns internal ML model metadata for the frontend presentation tab."""
+        """Returns internal ML model metadata for backend inspection."""
         genre_list = []
         for g_str in self.df['genres'].dropna():
             genre_list.extend([g.strip() for g in g_str.split(',') if g.strip()])
@@ -279,6 +284,6 @@ class AnimeRecommender:
             "matrix_shape": [self.tfidf_matrix.shape[0], self.tfidf_matrix.shape[1]],
             "genre_distribution": genre_counts,
             "sample_vocabulary": list(feature_names[:40]),
-            "algorithm": "TF-IDF (Sublinear Scaling, Bi-grams) + Cosine Similarity Matrix",
+            "algorithm": "TF-IDF (Sublinear Scaling, Bigrams) + Cosine Similarity",
             "studios_count": len(set(valid_studios))
         }
