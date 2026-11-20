@@ -8,17 +8,20 @@ A full-stack, production-ready **Anime Recommender System** built with a **React
 
 1. **Content-Based ML Recommender Engine**:
    - Computes high-dimensional **TF-IDF feature vectors** across genres, synopses, studios, and release types.
-   - Calculates a **Cosine Similarity Matrix** to identify thematic matches.
+   - Computes cosine similarity on demand to identify thematic matches.
 
 2. **Personalized User Feed**:
    - Aggregates user's saved favorite anime and genre preferences into a dynamic profile vector.
-   - Generates real-time match percentages (e.g. `97.4% Match`) and natural language explanations (e.g. *"95% match due to shared Action, Dark Fantasy genres & Studio MAPPA"*).
+   - Shows cosine similarity as a match percentage and explains recommendations using the selected titles and genres.
 
-3. **Official Streaming Platform Links**:
-   - Provides direct badges and links for verified streaming sources (**Crunchyroll, Netflix, Hulu, Disney+, Max, MyAnimeList**) for every anime title.
+3. **Platform Search Links**:
+   - Opens title searches on Crunchyroll, Netflix, and Hulu, plus the title's MyAnimeList page. Availability varies by platform and region.
 
-4. **Mini-Project Presentation / ML Insights Tab**:
-   - Live dashboard detailing dataset metrics, vector space vocabulary size, matrix shapes, genre distribution charts, and end-to-end ML pipeline architecture.
+4. **Recommendation Tools in My Picks**
+   - Anime Echo finds similar titles from a selected anime.
+   - Taste Blend combines selected titles and genres into a preference profile.
+   - Story Spark matches a written story description against the catalog using the existing TF-IDF vectors.
+   - Each tool runs on submission and supports a minimum score. Model metadata remains available through the backend API.
 
 5. **StitchMCP Cinematic Noir Design System**:
    - Glassmorphic panels (`backdrop-filter: blur(16px)`), deep midnight navy canvas (`#131313`), Netflix action red accents (`#e50914`), cine gold ratings (`#e9c349`), Playfair Display display headlines, and Inter body typography.
@@ -31,9 +34,9 @@ A full-stack, production-ready **Anime Recommender System** built with a **React
 ANIME-RECOMMENDER SYSTEM/
 ├── backend/                        # Python Machine Learning Backend
 │   ├── data/
-│   │   └── anime_dataset.csv       # 17,562+ Kaggle Anime Dataset
+│   │   └── anime_dataset.csv       # Local dataset used for optional retraining
 │   ├── models/
-│   │   └── recommender_model.pkl   # Serialized TF-IDF Vectorizer & Cosine Matrix
+│   │   └── recommender_model.pkl   # Bundled catalog and TF-IDF vectors
 │   ├── recommender.py              # ML Engine (TF-IDF, Cosine Similarity, Explanations)
 │   ├── main.py                     # FastAPI Web Server & REST API
 │   ├── train_model.py              # Model training & pipeline script
@@ -43,12 +46,13 @@ ANIME-RECOMMENDER SYSTEM/
     ├── public/
     ├── src/
     │   ├── components/
-    │   │   ├── Navbar.jsx          # Header, live search, 4 view tabs, saved drawer
+    │   │   ├── Navbar.jsx          # Header, live search, navigation, saved drawer
     │   │   ├── HeroBanner.jsx      # Spotlight hero slider with watch links & details
     │   │   ├── AnimeCard.jsx       # Poster card with score, match %, genre pills
     │   │   ├── AnimeModal.jsx      # Detail modal: Synopsis, Watch Sources, ML reasons
     │   │   ├── PreferencesBar.jsx  # Interactive preference tuner (favorites & genres)
-    │   │   ├── MLInsights.jsx      # Mini-project presentation tab showcasing ML internals
+    │   │   ├── RecommendationTools.jsx # Anime Echo, Taste Blend, Story Spark selector
+    │   │   ├── AnimeSeedPicker.jsx # Catalog search for recommendation inputs
     │   │   ├── HistoryDrawer.jsx   # Saved favorites drawer
     │   │   └── PersonalizedFeed.jsx# AI/ML Personalized recommendation feed
     │   ├── App.jsx                 # App state & API integration
@@ -65,27 +69,31 @@ ANIME-RECOMMENDER SYSTEM/
 ### 1. Start Python ML Backend (FastAPI)
 ```bash
 cd backend
-pip install -r requirements.txt
-python train_model.py
-python main.py
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 *API will run at `http://127.0.0.1:8000` with Swagger docs available at `http://127.0.0.1:8000/docs`.*
+
+The bundled model includes the 17,562-title catalog. To retrain it, place the prepared CSV at `backend/data/anime_dataset.csv` and run `python train_model.py` from `backend`.
 
 ### 2. Start React Visual Frontend (Vite)
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 *Frontend will run at `http://localhost:5173`.*
+
+Vite proxies `/api` calls to the local FastAPI server. For a deployed frontend, set `VITE_API_URL` to the base URL of the reachable FastAPI server (for example `https://api.example.com`) before building the frontend. For a same-origin deployment that routes `/api` to FastAPI, leave it unset.
 
 ---
 
 ## 📊 REST API Endpoints
 
-- `GET /api/anime`: Paginated & filterable list of anime (`?search=attack&genre=Action&min_score=8.5`).
+- `GET /api/anime` returns paginated titles filtered by literal title search, score, and genre. Repeat `genre` to match any requested genre, for example `?genre=Action&genre=Fantasy&min_score=8&page=1&limit=24`.
 - `GET /api/anime/{id}`: Detailed anime metadata & streaming links.
 - `POST /api/recommend/similar`: Compute similar anime for a target ID.
 - `POST /api/recommend/personalized`: Generate custom recommendations based on user favorites & genres.
-- `GET /api/ml-info`: Return vocabulary metrics and matrix shapes for presentation.
+- `POST /api/recommend/text` matches a description supplied as `query`, with optional `min_score` and `top_n`.
+- `GET /api/ml-info` returns backend model metadata.
 - `GET /api/genres`: List of unique genres with frequency counts.
