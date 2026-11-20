@@ -88,6 +88,14 @@ npm run dev
 
 Vite proxies `/api` calls to the local FastAPI server. For a deployed frontend, set `VITE_API_URL` to the base URL of the reachable FastAPI server (for example `https://api.example.com`) before building the frontend. For a same-origin deployment that routes `/api` to FastAPI, leave it unset.
 
+### Deploy the full application on Vercel
+
+Use the repository root as the Vercel project's Root Directory. Leave that setting empty, select Vite, and let the root `vercel.json` supply the install command, build command, and `frontend/dist` output directory. Leave `VITE_API_URL` unset so the frontend calls its own `/api` routes.
+
+The `api/index.py` function imports the existing FastAPI app and includes its trained model. The root requirements file installs the backend dependencies with Python 3.13. API rewrites take precedence over the React page fallback, so `/api/anime` returns JSON and page refreshes such as `/personalized` continue to work.
+
+For an existing project configured with Root Directory `frontend`, change it to the repository root and redeploy the latest production commit. A frontend-only deployment requires a separately hosted API configured through `VITE_API_URL`.
+
 ---
 
 ## 📊 REST API Endpoints
