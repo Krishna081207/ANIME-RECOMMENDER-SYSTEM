@@ -1,5 +1,6 @@
 import React from "react";
 import { BookmarkPlus, Check, Sparkles, Star } from "lucide-react";
+import ViewAnimeLink from "./ViewAnimeLink";
 
 export default function AnimeCard({ anime, onSelect, onToggleFavorite, isFavorite }) {
   const title = anime.english_name || anime.name;
@@ -33,6 +34,9 @@ export default function AnimeCard({ anime, onSelect, onToggleFavorite, isFavorit
           </div>
         )}
         {anime.explanation && <p className="card-explanation">{anime.explanation}</p>}
+      </div>
+      <div className="anime-card-actions">
+        <ViewAnimeLink anime={anime} />
       </div>
     </article>
   );

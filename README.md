@@ -14,8 +14,10 @@ A full-stack, production-ready **Anime Recommender System** built with a **React
    - Aggregates user's saved favorite anime and genre preferences into a dynamic profile vector.
    - Shows cosine similarity as a match percentage and explains recommendations using the selected titles and genres.
 
-3. **Platform Search Links**:
-   - Opens title searches on Crunchyroll, Netflix, and Hulu, plus the title's MyAnimeList page. Availability varies by platform and region.
+3. **View Anime**
+   - A View button on cards, the featured title, and anime details opens a streaming provider in a new tab.
+   - The backend retrieves title-specific streaming links from MyAnimeList through Jikan and caches listings for up to an hour. The first listed provider opens automatically. Provider choices are also shown in the detail dialog.
+   - Missing provider listings and lookup failures offer platform catalog searches, with retry for failed lookups. Availability depends on location and subscription.
 
 4. **Recommendation Tools in My Picks**
    - Anime Echo finds similar titles from a selected anime.
@@ -92,6 +94,7 @@ Vite proxies `/api` calls to the local FastAPI server. For a deployed frontend, 
 
 - `GET /api/anime` returns paginated titles filtered by literal title search, score, and genre. Repeat `genre` to match any requested genre, for example `?genre=Action&genre=Fantasy&min_score=8&page=1&limit=24`.
 - `GET /api/anime/{id}`: Detailed anime metadata & streaming links.
+- `GET /api/anime/{id}/streaming` retrieves streaming providers for the View action using [Jikan's streaming endpoint](https://github.com/jikan-me/jikan-rest/blob/master/storage/api-docs/api-docs.json).
 - `POST /api/recommend/similar`: Compute similar anime for a target ID.
 - `POST /api/recommend/personalized`: Generate custom recommendations based on user favorites & genres.
 - `POST /api/recommend/text` matches a description supplied as `query`, with optional `min_score` and `top_n`.

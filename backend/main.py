@@ -1,10 +1,12 @@
 from typing import Annotated
+from urllib.error import URLError
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, StringConstraints
 
 from recommender import AnimeRecommender
+from streaming import get_streaming_sources
 
 app = FastAPI(
     title="Anime Recommender ML API",
@@ -74,6 +76,25 @@ def get_anime_by_id(anime_id: int):
     if not anime:
         raise HTTPException(status_code=404, detail="Anime not found")
     return anime
+
+@app.get("/api/anime/{anime_id}/streaming")
+def get_anime_streaming(anime_id: int):
+    anime = recommender.get_anime_by_id(anime_id)
+    if not anime:
+        raise HTTPException(status_code=404, detail="Anime not found")
+    try:
+        sources = get_streaming_sources(anime_id)
+    except (URLError, OSError, ValueError) as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Streaming availability could not be checked. Please try again shortly."
+        ) from error
+    return {
+        "anime_id": anime_id,
+        "title": anime.get('english_name') or anime['name'],
+        "sources": sources,
+        "listing_url": f"https://myanimelist.net/anime/{anime_id}",
+    }
 
 @app.post("/api/recommend/similar")
 def recommend_similar(req: SimilarRequest):

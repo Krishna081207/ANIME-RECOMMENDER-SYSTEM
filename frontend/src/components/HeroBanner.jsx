@@ -1,5 +1,6 @@
 import React from "react";
 import { BookmarkPlus, Check, Info, Star } from "lucide-react";
+import ViewAnimeLink from "./ViewAnimeLink";
 
 export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavorite }) {
   const title = anime.english_name || anime.name;
@@ -16,8 +17,9 @@ export default function HeroBanner({ anime, onSelect, onToggleFavorite, isFavori
         <h1 id="featured-anime-title">{title}</h1>
         <p className="hero-synopsis">{anime.synopsis}</p>
         <div className="picks-toolbar-actions">
-          <button className="btn-primary" onClick={() => onSelect(anime)}>
-            <Info size={17} /> View details
+          <ViewAnimeLink anime={anime} />
+          <button className="btn-secondary" onClick={() => onSelect(anime)}>
+            <Info size={17} /> Details
           </button>
           <button className={isFavorite ? "btn-gold" : "btn-secondary"} aria-pressed={isFavorite} onClick={() => onToggleFavorite(anime)}>
             {isFavorite ? <Check size={17} /> : <BookmarkPlus size={17} />}

@@ -2,10 +2,12 @@ import React, { useEffect, useRef } from "react";
 import { BookmarkPlus, Check, ExternalLink, Sparkles, Star, X } from "lucide-react";
 import AnimeCard from "./AnimeCard";
 import useApiResource from "../hooks/useApiResource";
+import ViewAnimeLink from "./ViewAnimeLink";
 
 export default function AnimeModal({ anime, onClose, onToggleFavorite, onSelectAnime, favorites }) {
   const dialog = useRef(null);
   const details = useApiResource(`/api/anime/${anime.anime_id}`);
+  const availability = useApiResource(`/api/anime/${anime.anime_id}/streaming`);
   const similar = useApiResource("/api/recommend/similar", {
     body: JSON.stringify({ anime_id: anime.anime_id, top_n: 4 })
   });
@@ -21,7 +23,7 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, onSelectA
   const savedIds = new Set(favorites.map((favorite) => favorite.anime_id));
   const isSaved = savedIds.has(item.anime_id);
   const genres = item.genres?.split(",").map((genre) => genre.trim()).filter(Boolean) || [];
-  const sources = Array.isArray(item.streaming_sources) ? item.streaming_sources : [];
+  const sources = availability.data?.sources || [];
   const recommendations = similar.data?.recommendations || [];
 
   return (
@@ -40,6 +42,7 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, onSelectA
         <div className="anime-detail-layout">
           <div className="detail-poster">
             <img src={item.poster_url} alt="" />
+            <ViewAnimeLink anime={item} />
             <button className={isSaved ? "btn-gold" : "btn-secondary"} aria-pressed={isSaved} onClick={() => onToggleFavorite(item)}>
               {isSaved ? <Check size={17} /> : <BookmarkPlus size={17} />}
               {isSaved ? "Saved to My Library" : "Save to My Library"}
@@ -77,18 +80,23 @@ export default function AnimeModal({ anime, onClose, onToggleFavorite, onSelectA
             )}
 
             <section className="detail-section">
-              <h3>Where to look</h3>
-              {sources.length ? (
+              <h3>Where to watch</h3>
+              {availability.loading ? (
+                <p role="status">Checking streaming providers…</p>
+              ) : availability.error ? (
+                <p>{availability.error} <button className="btn-secondary" onClick={availability.retry}>Retry availability</button></p>
+              ) : sources.length ? (
                 <div className="picks-chips">
                   {sources.map((source) => (
                     <a className="btn-secondary" key={source.url} href={source.url} target="_blank" rel="noopener noreferrer">
-                      {source.name === "MyAnimeList" ? source.name : `Search ${source.name}`} <ExternalLink size={14} />
+                      View on {source.name} <ExternalLink size={14} />
                     </a>
                   ))}
                 </div>
               ) : (
-                <p>No platform links available.</p>
+                <p>No streaming provider is listed for this title.</p>
               )}
+              <p className="picks-hint">Availability depends on your location and subscription.</p>
             </section>
 
             <section className="detail-section">

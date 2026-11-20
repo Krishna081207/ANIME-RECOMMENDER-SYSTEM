@@ -8,6 +8,7 @@ import PersonalizedFeed from "@/components/PersonalizedFeed";
 import AnimeCard from "@/components/AnimeCard";
 import AnimeModal from "@/components/AnimeModal";
 import HistoryDrawer from "@/components/HistoryDrawer";
+import WatchPage from "@/components/WatchPage";
 import useApiResource from "@/hooks/useApiResource";
 
 const FAVORITES_KEY = "anime_favorites";
@@ -65,6 +66,7 @@ export default function App() {
       />
 
       <Routes>
+        <Route path="/watch/:animeId" element={<WatchPage />} />
         <Route path="/personalized" element={
           <PersonalizedFeed
             allGenres={genres.data?.genres}

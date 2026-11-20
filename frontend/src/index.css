@@ -451,6 +451,13 @@ button.glass-pill[aria-pressed="true"] {
 
 .anime-card-open::after { content: ""; position: absolute; inset: 0; z-index: 1; }
 .card-explanation { color: #91f5ff; }
+.anime-card-actions { position: relative; z-index: 2; margin-top: auto; padding: 0 14px 14px; }
+.view-anime-link { justify-content: center; }
+.anime-card-actions .view-anime-link { width: 100%; }
+.watch-status { display: grid; justify-items: center; gap: 16px; }
+.watch-status h1 { font-family: var(--font-headline); font-size: clamp(1.75rem, 5vw, 2.5rem); }
+.watch-platform-searches h2 { font-size: 1rem; margin-bottom: 8px; }
+.watch-platform-searches .picks-chips { justify-content: center; }
 .seed-search { display: grid; gap: 8px; padding: 14px; border-radius: var(--radius-md); background: var(--bg-darker); }
 .seed-search input { width: 100%; font: inherit; }
 .seed-result {
