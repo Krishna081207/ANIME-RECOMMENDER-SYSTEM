@@ -1,8 +1,8 @@
-import os
-from typing import List, Optional
+from typing import Annotated
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, StringConstraints
 
 from recommender import AnimeRecommender
 
@@ -12,27 +12,32 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for React frontend (Vite default port 5173 / localhost)
+# The public API does not use cookies or authenticated requests.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 # Initialize ML recommender engine
 recommender = AnimeRecommender()
 
 class SimilarRequest(BaseModel):
-    anime_id: int
-    top_n: Optional[int] = 10
+    anime_id: int = Field(gt=0)
+    top_n: int = Field(default=10, ge=1, le=100)
+    min_score: float = Field(default=0.0, ge=0, le=10)
 
 class PersonalizedRequest(BaseModel):
-    favorite_ids: Optional[List[int]] = []
-    favorite_genres: Optional[List[str]] = []
-    min_score: Optional[float] = 0.0
-    top_n: Optional[int] = 12
+    favorite_ids: list[int] | None = Field(default_factory=list)
+    favorite_genres: list[str] | None = Field(default_factory=list)
+    min_score: float = Field(default=0.0, ge=0, le=10)
+    top_n: int = Field(default=12, ge=1, le=100)
+
+class TextRequest(BaseModel):
+    query: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3, max_length=1000)]
+    min_score: float = Field(default=0.0, ge=0, le=10)
+    top_n: int = Field(default=12, ge=1, le=100)
 
 @app.get("/")
 def read_root():
@@ -46,11 +51,11 @@ def read_root():
 
 @app.get("/api/anime")
 def get_anime(
-    search: Optional[str] = Query("", description="Search by title or english name"),
-    genre: Optional[str] = Query("", description="Filter by genre"),
-    min_score: Optional[float] = Query(0.0, description="Minimum MAL score threshold"),
-    limit: Optional[int] = Query(100, description="Limit results per page"),
-    page: Optional[int] = Query(1, description="Page number")
+    search: Annotated[str, Query(description="Search by title or English name")] = "",
+    genre: Annotated[list[str] | None, Query(description="Match any selected genre")] = None,
+    min_score: Annotated[float, Query(ge=0, le=10, description="Minimum MAL score")] = 0.0,
+    limit: Annotated[int, Query(ge=1, le=500, description="Results per page")] = 100,
+    page: Annotated[int, Query(ge=1, description="Page number")] = 1,
 ):
     results, total_count = recommender.get_all_anime(
         search=search, genre=genre, min_score=min_score, limit=limit, page=page
@@ -60,7 +65,7 @@ def get_anime(
         "count": len(results),
         "page": page,
         "limit": limit,
-        "data": results
+        "data": results,
     }
 
 @app.get("/api/anime/{anime_id}")
@@ -72,7 +77,9 @@ def get_anime_by_id(anime_id: int):
 
 @app.post("/api/recommend/similar")
 def recommend_similar(req: SimilarRequest):
-    results = recommender.recommend_by_anime_id(anime_id=req.anime_id, top_n=req.top_n)
+    results = recommender.recommend_by_anime_id(
+        anime_id=req.anime_id, top_n=req.top_n, min_score=req.min_score
+    )
     if not results and not recommender.get_anime_by_id(req.anime_id):
         raise HTTPException(status_code=404, detail=f"Anime ID {req.anime_id} not found")
     return {
@@ -95,6 +102,17 @@ def recommend_personalized(req: PersonalizedRequest):
             "favorite_genres": req.favorite_genres,
             "min_score": req.min_score
         },
+        "count": len(results),
+        "recommendations": results
+    }
+
+@app.post("/api/recommend/text")
+def recommend_from_description(req: TextRequest):
+    results = recommender.recommend_by_text(
+        query=req.query, min_score=req.min_score, top_n=req.top_n
+    )
+    return {
+        "query": req.query,
         "count": len(results),
         "recommendations": results
     }
